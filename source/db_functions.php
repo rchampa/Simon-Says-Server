@@ -28,30 +28,90 @@ class DB_Functions {
 		}
 	}
 	
-	public function addContact($user_name, $name_user_contact){
-	             
-		$result = mysql_query("insert into contactos(usuario, contacto, added_at) values ('$user_name', '$name_user_contact', NOW())");
+	public function register($name, $password, $gcm_id) {
+        
+		if( !$this->isUserRegistered($name) ){
+			$result = mysql_query("insert into users(name, password, gcm_id, user_created_at) values ('$name', '$password', '$gcm_id', NOW())");
+		}
+		else{
+			return false;
+		}
+   
+		return $result;
+    }
+	
+	public function addFriend($player_name, $friend_name){
+	    		 
+		if( $this->isUserRegistered($player_name) && $this->isUserRegistered($friend_name) ){
+			if ( !$this->areFriends($player_name, $friend_name) ){
+				$result = mysql_query("insert into friends(player_name, friend_name, friendship_added_at) values ('$player_name', '$friend_name', NOW())");
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			return false;
+		}
 			
 		return $result;
 	
 	}
 	
+	public function requestGame($player_name, $friend_name){
+	    		 
+		if( $this->isUserRegistered($player_name) && $this->isUserRegistered($friend_name) ){
+			if ( $this->areFriends($player_name, $friend_name) ){
+				$result = mysql_query("insert into games(player1_name, player2_name, friendship_added_at) values ('$player_name', '$friend_name', NOW())");
+				return $result;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			return false;
+		}
+	}
 	
- 
-    /**
-     * Storing new user
-     * returns user details
-     */
-    public function storeUser($name, $password, $gcm_id) {
-        // insert user into database
-        $result = mysql_query("insert into users(name, password, gcm_id, created_at) VALUES('$name', '$password', '$gcm_id', NOW())");
-        
-		return $result;
-    }
- 
-    /**
-     * Getting all users
-     */
+	public function isGameRegistered($game_id){
+		$result = mysql_query("select * from games where game_id='$game_id'");
+		if (mysql_num_rows($result) > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public function acceptGame($game_id){
+	
+		if($this->isGameRegistered($game_id)){
+			$result = mysql_query("update games set in_process=true,accepted=true where game_id='$game_id'");
+			return $result;
+		}
+		else{
+			return false;
+		}
+	
+	}
+	
+	public function isGameInProgress($game_id){
+		
+		
+	}
+	
+	public function makemove($game_id, $player_name, $move){
+	
+		if($this->isGameRegistered($game_id)){
+			$result = mysql_query("insert into moves (game_id,player_name,move,move_created_at) values ('$game_id', '$player_name', '$move', NOW())");
+			return $result;
+		}
+		else{
+			return false;
+		}
+		
+	}
+	
     public function getAllUsers() {
         $result = mysql_query("select * from users");
         return $result;
@@ -61,6 +121,16 @@ class DB_Functions {
         $result = mysql_query("select friend from friends where player_name = '$name'");
         return $result;
     }
+	
+	public function areFriends($player_name, $friend_name){
+		$result = mysql_query("select * from friends where (player_name='$player_name' AND friend_name='$friend_name') OR (player_name='$friend_name' AND friend_name='$player_name')");
+		
+		if (mysql_num_rows($result) > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 }
  
