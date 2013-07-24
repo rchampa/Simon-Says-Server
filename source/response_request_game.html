@@ -1,0 +1,38 @@
+<html>
+<head>
+<SCRIPT TYPE="text/javascript">
+	
+	function valid(menu) {
+		if(menu.selectedIndex == 0) {
+			alert('You must make a selection from the menu');
+			return false;
+		} 
+	}
+
+</SCRIPT>
+</head>
+<body> 
+
+<form method="post" action="response_request_game.php" onsubmit="return valid(this.response)">
+<br>
+Game ID:
+<br>
+<input type="Text" name="game_id" >
+<br>
+
+<br>
+Response:
+<br>
+<select name="response">
+<option value="0" selected>(please select:)</option>
+<option value="1">Accept</option>
+<option value="2">Refuse</option>
+</select>
+<br>
+
+
+<input type="Submit" name="enviar" value="Send a response">
+</form>
+
+</body>
+</html>

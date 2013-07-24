@@ -1,27 +1,28 @@
 <?php
 
+/*
+	0	User registration successfully.
+	1	User already registered, cant register the same user twice.
+	2	Unknown problem.
+*/
+
 $name = $_POST['name'];
 $password = $_POST['password'];
 $gcm_id = $_POST['gcm_id'];
+$email = $_POST['email'];
 
 require_once 'db_functions.php';
 $db = new DB_Functions();
 
-	if($db->register($name, $password, $gcm_id)){
-		echo(" The user not registered.");
+	try{
+		$result = $db->register($name, $password, $gcm_id, $email);	
 	}
-	else{
-
-		if($db->adduser($id,$password,$nombre,$apellido)){	
-			$resultado[]=array("estado"=>"0", "mensaje"=>"El usuario fue agregado a la Base de Datos correctamente.");
-		}else{
-			$resultado[]=array("estado"=>"1", "mensaje"=>"Ha ocurrido un error.");
-		}		
-
-	}
-
-echo json_encode($resultado);
+	catch (Exception $e) {
+		$result = array("code"=>"-1", "message"=>"Unknown problem.");
+    }
 	
+	echo json_encode($result);	
+
 ?>
 
 
