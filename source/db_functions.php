@@ -10,36 +10,49 @@
  
 	User Registration
 	==== ============
-	0	User registration successfully.
-	1	$user is already registered, cant register the same user twice.
+	000	User registration successfully.
+	001	$user is already registered, cant register the same user twice.
 	
 	Add a friend
 	=== = ======
-	2	Friendship added successfully.
-	3	They are already friends.
-	4	$user is not registered.
+	100,2	Friendship added successfully.
+	101,3	They are already friends.
+	102,4	$user is not registered.
 	
-	Request a new game
+	Request a new game //4,5,7,15,16
 	======= = === ====
-	5	New game added, waiting for player to accept the request...
-	6	There is already a game in progress.
-	7	They are not friends.
+	200,5	New game added, waiting for player to accept the request...
+	201,6	There is already a game in progress.
+	202,7	They are not friends.
+	203,4	$user is not registered.
+	204,15	They have another game in progress.
+	205,16	They have another request. They should accept or refuse that request.	
 	
 	Response a request game
 	======== = ======= ====
-	8	Accepted game.
-	9	Refused game.
-	10	Surrendered $user.
-	11	The game is already in progress.
-	12	The game does not exists.
+	300,8	Accepted game.
+	301,9	Refused game.
+	302,11	The game is already in progress.
+	303,12	The game does not exists.
 	
 	Make a move
 	==== = ====
-	13	New move added.
-	14	The game is not ready.
-	15	They have another game in progress.
-	16	They have another request. They should accept or refuse that request.
-	17	Invalid player, the player do not belong to the game.
+	400,13	New move added.
+	401,14	The game is not ready.
+	402		The game does not exists.
+	403		Invalid player, the player do not belong to the game.
+	404		Error 404
+	
+	Login
+	=====
+	500,18	Login succesfull.
+	501,19	Name or password are wrong.
+	
+	Login
+	=====
+	600		Updated complete.
+	601		Fail at updating id.
+	
 	
 */
  
@@ -60,6 +73,19 @@ class DB_Functions {
     function __destruct() {
     }
 	
+	public function updateID($name, $gcm_id){
+		
+		if(mysql_query("update users set gcm_id='$gcm_id' where name='$name'")){
+			$result=array("code"=>"600", "message"=>"Updated complete.");
+			return $result;
+		}
+		else{
+			$result=array("code"=>"601", "message"=>"Fail at updating id.");
+			return $result;
+		}
+		
+	}
+	
 	public function isUserRegistered($user_name){
 		// search if the user is already added in gcm_users
 		$result = mysql_query("select * from users where name='$user_name'");
@@ -71,11 +97,28 @@ class DB_Functions {
 		}
 	}
 	
+	public function login($name, $password){
+	
+		$query = mysql_query("select * from users where name='$name' and password='$password'");
+		
+		if (mysql_num_rows($query) > 0) {
+			if($reg=mysql_fetch_array($query)){
+				$result[]=array("code"=>"500", "message"=>"Login succesfull.");
+				$result[]=array("gcm_id"=>$reg['gcm_id']);
+			}
+			return $result;
+		} else {
+			$result[]=array("code"=>"501", "message"=>"Name or password are wrong.");
+			return $result;
+		}
+		
+	}
+	
 	public function register($name, $password, $gcm_id, $email) {
         
 		if( !$this->isUserRegistered($name) ){
 			if(mysql_query("insert into users(name, password, email, gcm_id, user_created_at) values ('$name', '$password', '$email', '$gcm_id', NOW())")){
-				$result=array("code"=>"0", "message"=>"User registration successfully.");
+				$result=array("code"=>"000", "message"=>"User registration successfully.");
 				return $result;
 			}
 			else{
@@ -84,7 +127,7 @@ class DB_Functions {
 			}
 		}
 		else{
-			$result=array("code"=>"1", "message"=>$name . " is already registered, cant register the same user twice.");
+			$result=array("code"=>"001", "message"=>$name . " is already registered, cant register the same user twice.");
 			return $result;
 		}
     }
@@ -92,21 +135,21 @@ class DB_Functions {
 	public function addFriend($player_name, $friend_name){
 	    		 
 		if( !$this->isUserRegistered($player_name) ){
-			$result=array("code"=>"4", "message"=>$player_name . "  is not registered.");
+			$result=array("code"=>"102", "message"=>$player_name . "  is not registered.");
 			return $result;
 		}
 		if( !$this->isUserRegistered($friend_name) ){
-			$result=array("code"=>"4", "message"=>$friend_name . "  is not registered.");
+			$result=array("code"=>"102", "message"=>$friend_name . "  is not registered.");
 			return $result;
 		}
 		
 		if ( $this->areFriends($player_name, $friend_name) ){
-			$result=array("code"=>"3", "message"=>"They are already friends.");
+			$result=array("code"=>"101", "message"=>"They are already friends.");
 			return $result;
 		}
 		
 		if(mysql_query("insert into friends(player_name, friend_name, friendship_added_at) values ('$player_name', '$friend_name', NOW())")){
-			$result=array("code"=>"2", "message"=>"Friendship added successfully.");
+			$result=array("code"=>"100", "message"=>"Friendship added successfully.");
 			return $result;
 		}
 		else{
@@ -120,32 +163,32 @@ class DB_Functions {
 	public function requestGame($player_name, $friend_name){
 	
 		if( !$this->isUserRegistered($player_name) ){
-			$result=array("code"=>"4", "message"=>$player_name . "  is not registered.");
+			$result=array("code"=>"203", "message"=>$player_name . "  is not registered.");
 			return $result;
 		}
 		if( !$this->isUserRegistered($friend_name) ){
-			$result=array("code"=>"4", "message"=>$friend_name . "  is not registered.");
+			$result=array("code"=>"203", "message"=>$friend_name . "  is not registered.");
 			return $result;
 		}
 		
 		if ( !$this->areFriends($player_name, $friend_name) ){
-			$result=array("code"=>"7", "message"=>"They are not friends.");
+			$result=array("code"=>"202", "message"=>"They are not friends.");
 			return $result;
 		}
 		
 		if ($this->areTheyPlaying($player_name, $friend_name) ){
-			$result=array("code"=>"15", "message"=>"They another game in progress.");
+			$result=array("code"=>"204", "message"=>"They another game in progress.");
 			return $result;
 		}
 		
 		if ($this->areTheyHaveAnotherRequest($player_name, $friend_name) ){
-			$result=array("code"=>"16", "message"=>"They have another request. They should accept or refuse that request.");
+			$result=array("code"=>"205", "message"=>"They have another request. They should accept or refuse that request.");
 			return $result;
 		}
 		
 	    		 
 		if(mysql_query("insert into games(player1_name, player2_name, game_created_at) values ('$player_name', '$friend_name', NOW())")){
-			$result=array("code"=>"5", "message"=>"New game added, waiting for player to accept the request..");
+			$result=array("code"=>"200", "message"=>"New game added, waiting for player to accept the request..");
 			return $result;
 		}
 		
@@ -155,16 +198,15 @@ class DB_Functions {
 		
 	}
 	
-	
 	public function responseRequestGame($game_id, $response){
 	
 		if( !$this->isGameRegistered($game_id) ){
-			$result=array("code"=>"12", "message"=>"The game does not exists.");
+			$result=array("code"=>"303", "message"=>"The game does not exists.");
 			return $result;
 		}
 		
 		if($this->isGameInProgress($game_id)){
-			$result=array("code"=>"11", "message"=>"The game is already in progress.");
+			$result=array("code"=>"302", "message"=>"The game is already in progress.");
 			return $result;
 		}
 		
@@ -172,7 +214,7 @@ class DB_Functions {
 			case "1":
 				
 				if(mysql_query("update games set state=2 where game_id='$game_id'")){
-					$result=array("code"=>"8", "message"=>"Accepted game.");
+					$result=array("code"=>"300", "message"=>"Accepted game.");
 					return $result;
 				}
 				
@@ -181,7 +223,7 @@ class DB_Functions {
 			case "2": 
 			
 				if(mysql_query("update games set state=3 where game_id='$game_id'")){
-					$result=array("code"=>"9", "message"=>"Refused game.");
+					$result=array("code"=>"301", "message"=>"Refused game.");
 					return $result;
 				}
 				
@@ -197,22 +239,22 @@ class DB_Functions {
 	public function makemove($game_id, $player_name, $move){
 	
 		if( !$this->isGameRegistered($game_id) ){
-			$result=array("code"=>"12", "message"=>"The game does not exists.");
+			$result=array("code"=>"402", "message"=>"The game does not exists.");
 			return $result;
 		}
 		
 		if( !$this->isGameInProgress($game_id)){
-			$result=array("code"=>"14", "message"=>"The game is not ready.");
+			$result=array("code"=>"401", "message"=>"The game is not ready.");
 			return $result;
 		}
 	
 		if( !$this->isPlayerOfTheGame($game_id, $player_name)){
-			$result=array("code"=>"17", "message"=>"Invalid player, the player do not belong to the game.");
+			$result=array("code"=>"403", "message"=>"Invalid player, the player do not belong to the game.");
 			return $result;
 		}
 	
 		if(mysql_query("insert into moves (game_id,player_name,move,move_created_at) values ('$game_id', '$player_name', '$move', NOW())")){
-			$result=array("code"=>"13", "message"=>"New move added.");
+			$result=array("code"=>"400", "message"=>"New move added.");
 			return $result;
 		}
 		

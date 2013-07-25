@@ -7,12 +7,11 @@
 	001	$user is already registered, cant register the same user twice.
 */
 
-if (isset($_POST["name"]) && isset($_POST["password"]) && isset($_POST["gcm_id"]) && isset($_POST["email"])) {
+if (isset($_POST["name"]) && isset($_POST["gcm_id"])) {
 
 	$name = $_POST['name'];
-	$password = $_POST['password'];
 	$gcm_id = $_POST['gcm_id'];
-	$email = $_POST['email'];
+	
 
 	require_once 'db_functions.php';
 	
@@ -20,7 +19,7 @@ if (isset($_POST["name"]) && isset($_POST["password"]) && isset($_POST["gcm_id"]
 	
 
 	try{
-		$result[] = $db->register($name, $password, $gcm_id, $email);	
+		$result[] = $db->updateID($name, $gcm_id);	
 	}
 	catch (Exception $e) {
 		$result[] = array("code"=>"-1", "message"=>"Unknown problem.");
