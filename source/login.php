@@ -18,10 +18,10 @@ if (isset($_POST["name"]) && isset($_POST["password"]) ) {
 	
 
 	try{
-		$result = $db->login($name, $password);	
+		$result[] = $db->login($name, $password);	
 	}
 	catch (Exception $e) {
-		$result = array("code"=>"-1", "message"=>"Unknown problem.");
+		$result[] = array("code"=>"-1", "message"=>"Unknown problem.");
 	}
 	echo json_encode($result);	
 		

@@ -19,34 +19,34 @@
 	101,3	They are already friends.
 	102,4	$user is not registered.
 	
-	Request a new game //4,5,7,15,16
+	Request a new game
 	======= = === ====
-	200,5	New game added, waiting for player to accept the request...
-	201,6	There is already a game in progress.
-	202,7	They are not friends.
-	203,4	$user is not registered.
-	204,15	They have another game in progress.
-	205,16	They have another request. They should accept or refuse that request.	
+	200		New game added, waiting for player to accept the request...
+	201		There is already a game in progress.
+	202		They are not friends.
+	203		$user is not registered.
+	204		They have another game in progress.
+	205		They have another request. They should accept or refuse that request.	
 	
 	Response a request game
 	======== = ======= ====
-	300,8	Accepted game.
-	301,9	Refused game.
-	302,11	The game is already in progress.
-	303,12	The game does not exists.
+	300		Accepted game.
+	301		Refused game.
+	302		The game is already in progress.
+	303		The game does not exists.
 	
 	Make a move
 	==== = ====
-	400,13	New move added.
-	401,14	The game is not ready.
+	400		New move added.
+	401		The game is not ready.
 	402		The game does not exists.
 	403		Invalid player, the player do not belong to the game.
 	404		Error 404
 	
 	Login
 	=====
-	500,18	Login succesfull.
-	501,19	Name or password are wrong.
+	500		Login succesfull.
+	501		Name or password are wrong.
 	
 	Login
 	=====
@@ -103,12 +103,12 @@ class DB_Functions {
 		
 		if (mysql_num_rows($query) > 0) {
 			if($reg=mysql_fetch_array($query)){
-				$result[]=array("code"=>"500", "message"=>"Login succesfull.");
-				$result[]=array("gcm_id"=>$reg['gcm_id']);
+				$result=array("code"=>"500", "message"=>"Login succesfull.");
+				$result=array("gcm_id"=>$reg['gcm_id']);
 			}
 			return $result;
 		} else {
-			$result[]=array("code"=>"501", "message"=>"Name or password are wrong.");
+			$result=array("code"=>"501", "message"=>"Name or password are wrong.");
 			return $result;
 		}
 		
@@ -188,7 +188,7 @@ class DB_Functions {
 		
 	    		 
 		if(mysql_query("insert into games(player1_name, player2_name, game_created_at) values ('$player_name', '$friend_name', NOW())")){
-			$result=array("code"=>"200", "message"=>"New game added, waiting for player to accept the request..");
+			$result=array("code"=>"200", "message"=>"New game added, waiting for player to accept the request..","GAME_ID"=>mysql_insert_id());
 			return $result;
 		}
 		
@@ -198,7 +198,7 @@ class DB_Functions {
 		
 	}
 	
-	public function responseRequestGame($game_id, $response){
+	public function responseRequestGame($game_id, $response, $player_name){
 	
 		if( !$this->isGameRegistered($game_id) ){
 			$result=array("code"=>"303", "message"=>"The game does not exists.");
@@ -222,7 +222,7 @@ class DB_Functions {
 				
 			case "2": 
 			
-				if(mysql_query("update games set state=3 where game_id='$game_id'")){
+				if(mysql_query("update games set state=4 where game_id='$game_id'")){
 					$result=array("code"=>"301", "message"=>"Refused game.");
 					return $result;
 				}
@@ -264,7 +264,7 @@ class DB_Functions {
 	}
 	
 	public function isGameRegistered($game_id){
-		$result = mysql_query("select * from games where game_id='$game_id' and (state!=3 and state!=4)");
+		$result = mysql_query("select * from games where game_id='$game_id' and (state!=4 and state!=5)");
 		if (mysql_num_rows($result) > 0) {
 			return true;
 		} else {
@@ -274,7 +274,7 @@ class DB_Functions {
 	
 	public function isGameInProgress($game_id){
 		
-		$result = mysql_query("select * from games where game_id='$game_id' and state=2");
+		$result = mysql_query("select * from games where game_id='$game_id' and (state=2 and state=3)");
 		
 		if (mysql_num_rows($result) > 0) {
 			return true;
@@ -283,17 +283,25 @@ class DB_Functions {
 		}
 		
 	}
-	
-	
-	
+
     public function getAllUsers() {
         $result = mysql_query("select * from users");
         return $result;
     }
+	
+	public function getUser($name) {
+        $query = mysql_query("select * from users where name = '$name'");
+        return mysql_fetch_array($query);
+    }
  
 	public function getFriends($name) {
-        $result = mysql_query("select friend from friends where player_name = '$name'");
-        return $result;
+        $query = mysql_query("select friend from friends where player_name = '$name'");
+        return mysql_fetch_array($query);
+    }
+	
+	public function getGame($game_id) {
+        $query = mysql_query("select * from games where game_id = '$game_id'");
+        return mysql_fetch_array($query);
     }
 	
 	public function areFriends($player_name, $friend_name){
@@ -307,7 +315,7 @@ class DB_Functions {
 	}
 	
 	public function areTheyPlaying($player1_name, $player2_name){
-		$result = mysql_query("select * from games where state=2 AND ( (player1_name='$player1_name' AND player2_name='$player2_name') OR (player1_name='$player2_name' AND player2_name='$player1_name') )" );
+		$result = mysql_query("select * from games where (state=2 and state=3) AND ( (player1_name='$player1_name' AND player2_name='$player2_name') OR (player1_name='$player2_name' AND player2_name='$player1_name') )" );
 		
 		if (mysql_num_rows($result) > 0) {
 			return true;
