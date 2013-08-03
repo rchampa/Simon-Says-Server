@@ -19,7 +19,7 @@ if (isset($_POST["name"]) && isset($_POST["password"]) ) {
 
 	try{
 		//Check this and be aware
-		$result = $db->login($name, $password);	
+		$result[] = $db->login($name, $password);	
 	}
 	catch (Exception $e) {
 		$result[] = array("code"=>"-1", "message"=>"Unknown problem.");

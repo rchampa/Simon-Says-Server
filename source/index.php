@@ -6,6 +6,7 @@
     <body>
 		<ul>
 			<li><a href="ui/login.html">Login</a></li>
+			<li><a href="ui/updateGCM.html">Update GCM</a></li>
 			<li><a href="ui/adduser.html">Add new user</a></li>
 			<li><a href="ui/add_friend.html">Add a new friend</a></li>
 			<li><a href="ui/response_friendship_request.html">Response a friendship request</a></li>

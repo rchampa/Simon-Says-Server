@@ -4,7 +4,7 @@
 	User Registration
 	==== ============
 	000	User registration successfully.
-	001	$user is already registered, cant register the same user twice.
+	001	$user is already registered, please use another username.
 */
 
 if (isset($_POST["name"]) && isset($_POST["password"]) && isset($_POST["gcm_id"]) && isset($_POST["email"])) {

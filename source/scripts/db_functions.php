@@ -11,7 +11,7 @@
 	User Registration
 	==== ============
 	000	User registration successfully.
-	001	$user is already registered, cant register the same user twice.
+	001	$user is already registered, please use another username.
 	
 	Add a friend
 	=== = ======
@@ -107,8 +107,7 @@ class DB_Functions {
 		
 		if (mysql_num_rows($query) > 0) {
 			if($reg=mysql_fetch_array($query)){
-				$result[]=array("code"=>"500", "message"=>"Login succesfull.");
-				$result[]=array("gcm_id"=>$reg['gcm_id']);
+				$result=array("code"=>"500", "message"=>"Login succesfull.", "gcm_id"=>$reg['gcm_id']);
 			}
 			return $result;
 		} else {
@@ -131,7 +130,7 @@ class DB_Functions {
 			}
 		}
 		else{
-			$result=array("code"=>"001", "message"=>$name . " is already registered, cant register the same user twice.");
+			$result=array("code"=>"001", "message"=>$name . " is already registered, please use another username.");
 			return $result;
 		}
     }
