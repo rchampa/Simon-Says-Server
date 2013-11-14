@@ -1,0 +1,46 @@
+<html>
+
+<head>
+<SCRIPT TYPE="text/javascript">
+	
+	function valid(menu) {
+		if(menu.selectedIndex == 0) {
+			alert('You must make a selection from the menu');
+			return false;
+		} 
+	}
+
+</SCRIPT>
+</head>
+<body> 
+<body> 
+
+<br>Response a frienship request:
+
+<form method="post" action="../scripts/response_friendship_request.php" onsubmit="return valid(this.response)" >
+<br>
+Name:
+<br>
+<input type="Text" name="name" >
+<br>
+
+<br>
+Friend:
+<br>
+<input type="Text" name="friend" >
+<br>
+
+<br>
+Response:
+<select name="response">
+<option value="0" selected>(please select:)</option>
+<option value="1">Yes</option>
+<option value="2">No</option>
+</select>
+<br>
+
+<input type="Submit" name="enviar" value="Send">
+</form>
+
+</body>
+</html>
