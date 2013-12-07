@@ -20,10 +20,10 @@ if (isset($_POST["name"]) && isset($_POST["password"]) && isset($_POST["gcm_id"]
 	
 
 	try{
-		$result[] = $db->register($name, $password, $gcm_id, $email);	
+            $result[] = $db->register($name, $password, $gcm_id, $email);	
 	}
 	catch (Exception $e) {
-		$result[] = array("code"=>"-1", "message"=>"Unknown problem.");
+            $result[] = array("code"=>"-1", "message"=>"Unknown problem.");
 	}
 	
 	echo json_encode($result);	

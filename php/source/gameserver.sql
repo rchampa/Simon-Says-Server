@@ -4,7 +4,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 11-11-2013 a las 15:27:34
+-- Tiempo de generación: 07-12-2013 a las 08:35:13
 -- Versión del servidor: 5.1.66
 -- Versión de PHP: 5.2.17
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `friends` (
   `friendship_updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `state` enum('waiting_for_response','accepted','rejected') NOT NULL DEFAULT 'waiting_for_response',
   PRIMARY KEY (`player_name`,`friend_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `friends`
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `games` (
   `score2` smallint(5) unsigned NOT NULL,
   `state` enum('waiting_for_response','waiting_player1','waiting_player2','refused','finished') NOT NULL DEFAULT 'waiting_for_response',
   PRIMARY KEY (`game_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
 
 --
 -- Volcado de datos para la tabla `games`
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `moves` (
   `move` varchar(60) NOT NULL,
   `move_created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`move_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=36 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=36 ;
 
 --
 -- Volcado de datos para la tabla `moves`
@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `user_created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `users`

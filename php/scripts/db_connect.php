@@ -17,9 +17,12 @@ class DB_Connect {
         require_once 'config.php';
 	
         // connecting to mysql
-        $con = mysql_connect(DB_HOST, DB_USER, DB_PASSWORD);
+        //$con = mysql_connect(DB_HOST, DB_USER, DB_PASSWORD);
+        $con = new PDO('mysql:host='.DB_HOST.';dbname='.DB_DATABASE, DB_USER, DB_PASSWORD);
+        $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
         // selecting database
-        mysql_select_db(DB_DATABASE);
+        //mysql_select_db(DB_DATABASE);
   
         // return database handler
         return $con;
@@ -27,7 +30,8 @@ class DB_Connect {
   
     // Closing database connection
     public function close() {
-        mysql_close();
+        //mysql_close();
+        $con = null;
     }
   
 } 
